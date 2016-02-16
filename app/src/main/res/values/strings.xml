@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Hermes</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_edit">Modo Edición</string>
+    <string name="nuevo_alumno">Nuev@ Alumn@</string>
+    <string name="title_activity_grilla_alumno">GrillaAlumno</string>
+    <string name="title_activity_hactivity">hactivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_nuevo_alumno">NuevoAlumnoActivity</string>
+    <string name="nuevoAlumno">Alumn@</string>
+    <string name="nombreAlumno">Nombre</string>
+    <string name="apellidoAlumno">Apellido</string>
+    <string name="sexoAlumno">Sexo</string>
+    <string name="alumno_guardar_confirmacion">Se han guardado los cambios</string>
+    <string name="alumno_crear_confirmacion">Se ha creado el alumno</string>
+    <string name="alumno_eliminar_titulo">Eliminar Alumno</string>
+    <string name="alumno_eliminar_mensaje">Esta seguro que desea eliminar el alumno?</string>
+    <string name="alumno_eliminar_confirmacion">El alumno ha sido eliminado</string>
+    <string-array name="tamañoPictograma">
+        <item>Chico</item>
+        <item>Mediano</item>
+        <item>Grande</item>
+    </string-array>
+</resources>
