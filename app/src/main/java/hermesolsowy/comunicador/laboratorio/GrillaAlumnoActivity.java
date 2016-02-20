@@ -149,7 +149,6 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             return null;
         }
 
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -165,8 +164,9 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             gridView = (GridView) rootView.findViewById(R.id.imagenes);
             this.setGrilla(3, 18);
 
-            List<Integer> listaIdImagenes = new ImageData(alumno.toString()).getImages().get(nombreSolapa.toLowerCase()).ids;
-            List<String> listaNombreImagenes =  new ImageData(alumno.toString()).getImages().get(nombreSolapa.toLowerCase()).nombres;
+            Database db = new Database(this.getContext());
+            List<Integer> listaIdImagenes = new ImageData(alumno,getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
+            List<String> listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
 
 
             imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion);
@@ -207,8 +207,6 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position, alumno, modoEdicion);
         }
 
@@ -238,10 +236,9 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
                         return alumno.toString();
                 }
             }else {
-                String[] solapas = alumno.getPestañas().split(","); //los nombres de las solapas están separadas por comas
+                String[] solapas = alumno.getPestañas().split(",");
 
                 if (position < solapas.length) {
-                    // System.out.println("solapas position" + solapas[position]);
                     return solapas[position];
                 } else if (position == solapas.length) {
                     return alumno.toString();

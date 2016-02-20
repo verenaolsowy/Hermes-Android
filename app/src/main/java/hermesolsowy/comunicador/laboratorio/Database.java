@@ -108,6 +108,22 @@ public class Database extends SQLiteOpenHelper {
         return listaAlumnos;
     }
 
+    public ArrayList<String> listaPicogramaAlumno(int alumno) {
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<String> listaPictogramas = new ArrayList<String>();
+        Cursor c = db.rawQuery(" SELECT pictograma_id FROM pictograma_alumno WHERE alumno_id="+alumno, null);
+        if (c.moveToFirst()) {
+            do {
+                listaPictogramas.add(c.getString(0));
+            } while (c.moveToNext());
+            db.close();
+            c.close();
+            return listaPictogramas;
+        }
+        return listaPictogramas;
+    }
+
+
     public Configuracion getConfiguracion() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(" SELECT ip, puerto FROM configuracion", null);
@@ -121,17 +137,6 @@ public class Database extends SQLiteOpenHelper {
             return configuracion;
         }
         return null;
-    }
-
-    public void modificarConfiguracion(String ip, Integer puerto) {
-        SQLiteDatabase db = getWritableDatabase();
-        if (db != null) {
-            ContentValues values = new ContentValues();
-            values.put("ip", ip);
-            values.put("puerto", puerto);
-            db.update("configuracion", values, "id= 1", null);
-            db.close();
-        }
     }
 
     public Alumno getAlumno(int id) {
@@ -158,6 +163,17 @@ public class Database extends SQLiteOpenHelper {
         db.close();
         c.close();
         return categoria;
+    }
+
+    public void modificarConfiguracion(String ip, Integer puerto) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            ContentValues values = new ContentValues();
+            values.put("ip", ip);
+            values.put("puerto", puerto);
+            db.update("configuracion", values, "id= 1", null);
+            db.close();
+        }
     }
 
     public Alumno modificarAlumno(int id, String nombre, String apellido, String sexo, String tamañoPictograma, String solapas) {

@@ -1,5 +1,8 @@
 package hermesolsowy.comunicador.laboratorio;
 
+import android.app.Activity;
+import android.content.res.Resources;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -9,13 +12,15 @@ import java.util.Hashtable;
 
 
 public class ImageData {
-    private String nombreAlumno;
+    private Alumno alumno;
+    private Activity activity;
 
-    public ImageData(String nombre) {
-        nombreAlumno = nombre;
+    public ImageData(Alumno alumno, Activity activity) {
+        this.alumno = alumno;
+        this.activity = activity;
     }
 
-    public Hashtable<String, Data> getImages() {
+    public Hashtable<String, Data> getImages(Database db) {
         Hashtable<String, Data> images = new Hashtable<String, Data>();
         ArrayList<Integer> pista = new ArrayList<>();
         ArrayList<String> pistaAudio = new ArrayList<>();
@@ -117,14 +122,19 @@ public class ImageData {
         Data cuatro = new Data(emociones, emocionesAudios);
         images.put("emociones", cuatro);
 
-        ArrayList<Integer> alumno = new ArrayList<>();
+        ArrayList<Integer> alum = new ArrayList<>();
         ArrayList<String>alumnoAudios = new ArrayList<>();
-        alumno.add(R.drawable.si);
+        alum.add(R.drawable.si);
         alumnoAudios.add("si");
-        alumno.add(R.drawable.no);
+        alum.add(R.drawable.no);
         alumnoAudios.add("no");
-        Data cinco = new Data(alumno, alumnoAudios);
-        images.put(nombreAlumno, cinco);
+        ArrayList<String> pictogramas = db.listaPicogramaAlumno(alumno.getId());
+        for (String pictograma:pictogramas) {
+            alum.add(activity.getResources().getIdentifier(pictograma, "drawable", activity.getPackageName()));
+            alumnoAudios.add(pictograma);
+        }
+        Data cinco = new Data(alum, alumnoAudios);
+        images.put(alumno.toString(), cinco);
         return images;
     }
 }

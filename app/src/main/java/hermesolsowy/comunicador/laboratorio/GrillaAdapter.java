@@ -68,13 +68,14 @@ public class GrillaAdapter extends BaseAdapter {
                     mediaPlayer.start();
 
                     String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                    Database db = new Database(_activity);
-                    String categoria = db.getCategoria(nombreContenido);
-                    Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
-                    List<Notificacion> lista = new ArrayList<Notificacion>();
-                    lista.add(notificacion);
-
-                    new SendNotificationTask().execute(lista, _activity.getApplicationContext());
+                    if (nombreContenido != "si" && nombreContenido != "no") {
+                        Database db = new Database(_activity);
+                        String categoria = db.getCategoria(nombreContenido);
+                        Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
+                        List<Notificacion> lista = new ArrayList<Notificacion>();
+                        lista.add(notificacion);
+                        new SendNotificationTask().execute(lista, _activity.getApplicationContext());
+                    }
                 } else {
                     imageView.setColorFilter(2);
                     Database db = new Database(_activity);

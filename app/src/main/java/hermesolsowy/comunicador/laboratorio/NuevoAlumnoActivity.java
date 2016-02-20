@@ -187,17 +187,6 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        /*if (alumno != null){
-            Intent intent = new Intent(this, GrillaAlumnoActivity.class);
-            intent.putExtra("alumno", alumno);
-            intent.putExtra("modoEdicion", false);
-            startActivity(intent);
-            finish();
-        }else {
-            Intent intent = new Intent(this, ListaAlumnosActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
         guardarAlumno();
     }
 
