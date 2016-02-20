@@ -115,8 +115,25 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
             dialogGuardar.setIcon(android.R.drawable.ic_dialog_alert);
             dialogGuardar.setTitle(getResources().getString(R.string.alumno_guardar_titulo));
             dialogGuardar.setMessage(getResources().getString(R.string.alumno_guardar_mensaje));
-            dialogGuardar.setCancelable(true);
-            dialogGuardar.setNegativeButton(android.R.string.ok, null);
+            dialogGuardar.setCancelable(false);
+
+            dialogGuardar.setPositiveButton(getResources().getString(R.string.salir), new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int boton) {
+                    Intent intent;
+                    if (alumno == null){
+                        intent = new Intent(NuevoAlumnoActivity.this, ListaAlumnosActivity.class);
+                    }else{
+                        intent = new Intent(NuevoAlumnoActivity.this, GrillaAlumnoActivity.class);
+                        intent.putExtra("modoEdicion", false);
+                        intent.putExtra("alumno", alumno);
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
+            dialogGuardar.setNegativeButton(R.string.seguir, null);
             dialogGuardar.show();
         }
     }

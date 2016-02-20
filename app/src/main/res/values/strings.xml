@@ -20,6 +20,8 @@
     <string name="alumno_guardar_titulo">Guardar alumno</string>
     <string name="alumno_guardar_mensaje">Los campos nombre y apellido del alumno son requeridos. Verifique de completarlos correctamente</string>
     <string name="action_alum">Modo Alumno</string>
+    <string name="salir">Salir sin guardar</string>
+    <string name="seguir">Seguir editando</string>
     <string-array name="tamañoPictograma">
         <item>Chico</item>
         <item>Mediano</item>
