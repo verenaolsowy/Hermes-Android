@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +21,11 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
     Database db;
     Configuracion configuracion;
     Alumno alumno;
+    String pestañas;
+    CheckBox pista;
+    CheckBox establo;
+    CheckBox necesidades;
+    CheckBox emociones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,59 +46,107 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
         nombreAlumno = (TextView) findViewById(R.id.nombreAlumno);
         apellidoAlumno = (TextView) findViewById(R.id.apellidoAlumno);
         alumno = (Alumno)getIntent().getExtras().getSerializable("alumno");
-        if (alumno != null){
+
+        pista = (CheckBox) findViewById(R.id.pista);
+        establo = (CheckBox) findViewById(R.id.establo);
+        necesidades = (CheckBox) findViewById(R.id.necesidades);
+        emociones = (CheckBox) findViewById(R.id.emociones);
+
+        if (alumno != null) {
             nombreAlumno.setText(alumno.getNombre());
             apellidoAlumno.setText(alumno.getApellido());
+            pestañas = alumno.getPestañas();
+            String[] solapas = alumno.getPestañas().split(",");
+            for(String solapa: solapas) {
+                switch (solapa) {
+                    case "pista":
+                        pista.setChecked(true);
+                        break;
+                    case "establo":
+                        establo.setChecked(true);
+                        break;
+                    case "necesidades":
+                        necesidades.setChecked(true);
+                        break;
+                    case "emociones":
+                        emociones.setChecked(true);
+                        break;
+                }
+            }
+        }else{
+            Button botonEliminar = (Button) findViewById(R.id.eliminarAlumno);
+            botonEliminar.setEnabled(false);
         }
     }
 
 
-    public void guardar(View view){
+    public void guardarAlumno(){
+        setearSolapas();
+        Boolean guardado;
         if (alumno != null){
-            modificarAlumno();
+            guardado = modificarAlumno();
         }else{
-            nuevoAlumno();
+            guardado = nuevoAlumno();
         }
         String ip = direccionIP.getText().toString();
-        Integer puertoC = Integer.parseInt(puerto.getText().toString());
-        if (configuracion == null && (ip != null && ip != "" && puertoC != null)){
+        Integer puertoC = puerto.getText() != null ? Integer.parseInt(puerto.getText().toString()): null;
+
+        if (configuracion == null && (ip != null && ip.length() != 0 && puertoC != null)){
             db.agregarConfiguracion(ip, puertoC);
         }else{
-            if((configuracion.getDireccionIP() != ip && ip != null && ip != "") || (configuracion.getPuerto() != puertoC && puertoC != null)){
+            if (configuracion != null && ((configuracion.getDireccionIP() != ip && ip != null && ip.length() != 0) || (configuracion.getPuerto() != puertoC && puertoC != null))){
                 db.modificarConfiguracion(ip, puertoC);
             }
         }
-        if (alumno != null){
-            Intent intent = new Intent(this, GrillaAlumnoActivity.class);
-            intent.putExtra("alumno", alumno);
-            startActivity(intent);
-            finish();
-        }else {
-            Intent intent = new Intent(this, ListaAlumnosActivity.class);
-            startActivity(intent);
-            finish();
+        if(guardado) {
+            if (alumno != null) {
+                Intent intent = new Intent(this, GrillaAlumnoActivity.class);
+                intent.putExtra("alumno", alumno);
+                startActivity(intent);
+                finish();
+            } else {
+                Intent intent = new Intent(this, ListaAlumnosActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }else{
+            AlertDialog.Builder dialogGuardar = new AlertDialog.Builder(this);
+
+            dialogGuardar.setIcon(android.R.drawable.ic_dialog_alert);
+            dialogGuardar.setTitle(getResources().getString(R.string.alumno_guardar_titulo));
+            dialogGuardar.setMessage(getResources().getString(R.string.alumno_guardar_mensaje));
+            dialogGuardar.setCancelable(true);
+            dialogGuardar.setNegativeButton(android.R.string.ok, null);
+            dialogGuardar.show();
         }
     }
 
-    private void modificarAlumno(){
+    private boolean modificarAlumno(){
         String nombre = nombreAlumno.getText().toString();
         String apellido = apellidoAlumno.getText().toString();
         String tamañoPictograma = "";
-        alumno = db.modificarAlumno(alumno.getId(), nombre, apellido, "Femenino", tamañoPictograma, "establo");
-        Toast.makeText(NuevoAlumnoActivity.this, R.string.alumno_guardar_confirmacion, Toast.LENGTH_SHORT).show();
+        if ((nombre != null && nombre.length() != 0) && (apellido != null && apellido.length() != 0)) {
+            alumno = db.modificarAlumno(alumno.getId(), nombre, apellido, "Femenino", tamañoPictograma, pestañas);
+            Toast.makeText(NuevoAlumnoActivity.this, R.string.alumno_guardar_confirmacion, Toast.LENGTH_SHORT).show();
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    public void nuevoAlumno() {
+    public boolean nuevoAlumno() {
         String nombre = nombreAlumno.getText().toString();
         String apellido = apellidoAlumno.getText().toString();
         String tamañoPictograma = "";
 
-        if ((nombre != null && nombre != "") || (apellido != null && apellido != "")) {
+        if ((nombre != null && nombre.length() != 0) && (apellido != null && apellido.length() != 0)) {
             Database database = new Database(getApplicationContext());
             database.getWritableDatabase();
-            database.nuevoAlumno(nombre, apellido, "Femenino", tamañoPictograma, "establo");
+            database.nuevoAlumno(nombre, apellido, "Femenino", tamañoPictograma, pestañas);
             Toast.makeText(NuevoAlumnoActivity.this, R.string.alumno_crear_confirmacion, Toast.LENGTH_SHORT).show();
-
+            return true;
+        }else{
+            return false;
         }
 
     }
@@ -132,16 +187,18 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        if (alumno != null){
+        /*if (alumno != null){
             Intent intent = new Intent(this, GrillaAlumnoActivity.class);
             intent.putExtra("alumno", alumno);
+            intent.putExtra("modoEdicion", false);
             startActivity(intent);
             finish();
         }else {
             Intent intent = new Intent(this, ListaAlumnosActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
+        guardarAlumno();
     }
 
     @Override
@@ -151,9 +208,28 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
             return true;
         }
         if (id == android.R.id.home){
-            onBackPressed();
+            this.guardarAlumno();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setearSolapas() {
+        String solapas = "";
+
+        if (pista.isChecked()) {
+            solapas += "pista,";
+        }
+        if (establo.isChecked()) {
+            solapas += "establo,";
+        }
+        if (necesidades.isChecked()) {
+            solapas += "necesidades,";
+        }
+        if (emociones.isChecked()) {
+            solapas += "emociones,";
+        }
+
+        pestañas = solapas;
     }
 }

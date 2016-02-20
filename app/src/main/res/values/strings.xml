@@ -17,6 +17,9 @@
     <string name="alumno_eliminar_titulo">Eliminar Alumno</string>
     <string name="alumno_eliminar_mensaje">Esta seguro que desea eliminar el alumno?</string>
     <string name="alumno_eliminar_confirmacion">El alumno ha sido eliminado</string>
+    <string name="alumno_guardar_titulo">Guardar alumno</string>
+    <string name="alumno_guardar_mensaje">Los campos nombre y apellido del alumno son requeridos. Verifique de completarlos correctamente</string>
+    <string name="action_alum">Modo Alumno</string>
     <string-array name="tamañoPictograma">
         <item>Chico</item>
         <item>Mediano</item>

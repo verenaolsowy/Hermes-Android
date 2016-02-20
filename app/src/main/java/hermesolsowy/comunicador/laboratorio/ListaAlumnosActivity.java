@@ -31,6 +31,7 @@ public class ListaAlumnosActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(ListaAlumnosActivity.this, GrillaAlumnoActivity.class);
                 intent.putExtra("alumno", (Alumno) adapterView.getAdapter().getItem(position));
+                intent.putExtra("modoEdicion", false);
                 startActivity(intent);
             }
         });

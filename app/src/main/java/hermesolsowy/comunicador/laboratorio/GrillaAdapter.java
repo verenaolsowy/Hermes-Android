@@ -18,16 +18,18 @@ public class GrillaAdapter extends BaseAdapter {
     private List<Integer> listaIdImagenes = new ArrayList<Integer>();
     private List<String> listaNombreImagenes = new ArrayList<String>();
     private Alumno alumno;
+    private Boolean modoEdiccion;
 
     private int imageWidth;
 
     public GrillaAdapter(Activity activity, List<Integer> listaIdImagenes,
-                                int imageWidth, List<String> listaNombreImagenes, Alumno alumno) {
+                                int imageWidth, List<String> listaNombreImagenes, Alumno alumno, Boolean modoEdiccion) {
         this._activity = activity;
         this.listaIdImagenes = listaIdImagenes;
         this.listaNombreImagenes = listaNombreImagenes;
         this.imageWidth = imageWidth;
         this.alumno = alumno;
+        this.modoEdiccion = modoEdiccion;
     }
 
     @Override
@@ -60,16 +62,26 @@ public class GrillaAdapter extends BaseAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-                MediaPlayer mediaPlayer = MediaPlayer.create(_activity, soundId);
-                mediaPlayer.start();
-                String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                //ToDo: conseguir la categoria
-                Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), "categoriaHardcoded", "Cedica", nombreContenido); //el contexto no se usa, asi que queda hardocdeado como Cedica
-                List<Notificacion> lista = new ArrayList<Notificacion>();
-                lista.add(notificacion);
+                if (!modoEdiccion) {
+                    int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
+                    MediaPlayer mediaPlayer = MediaPlayer.create(_activity, soundId);
+                    mediaPlayer.start();
 
-                new SendNotificationTask().execute(lista, _activity.getApplicationContext());
+                    String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
+                    Database db = new Database(_activity);
+                    String categoria = db.getCategoria(nombreContenido);
+                    Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
+                    List<Notificacion> lista = new ArrayList<Notificacion>();
+                    lista.add(notificacion);
+
+                    new SendNotificationTask().execute(lista, _activity.getApplicationContext());
+                } else {
+                    imageView.setColorFilter(2);
+                    Database db = new Database(_activity);
+                    int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
+                    String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
+                    db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
+                }
             }
         });
         return imageView;

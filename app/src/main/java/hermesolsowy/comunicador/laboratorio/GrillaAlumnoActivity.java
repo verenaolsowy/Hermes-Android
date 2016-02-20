@@ -33,6 +33,7 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     Alumno alumno;
+    boolean modoEdicion;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -43,6 +44,7 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grilla_alumno);
         alumno = (Alumno) getIntent().getExtras().getSerializable("alumno");
+        modoEdicion = (Boolean)getIntent().getExtras().getBoolean("modoEdicion");
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -53,20 +55,41 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_grilla_alumno, menu);
+        if(modoEdicion) {
+            getMenuInflater().inflate(R.menu.menu_grilla_alumno_edicion, menu);
+        }else{
+            getMenuInflater().inflate(R.menu.menu_grilla_alumno, menu);
+
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(GrillaAlumnoActivity.this, NuevoAlumnoActivity.class);
-            intent.putExtra("alumno", alumno);
-            startActivity(intent);
-            finish();
+        switch(item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(GrillaAlumnoActivity.this, NuevoAlumnoActivity.class);
+                intent.putExtra("alumno", alumno);
+                startActivity(intent);
+                finish();
+                return true;
+            case R.id.action_edit:
+                Intent intentEdicion = new Intent(GrillaAlumnoActivity.this, GrillaAlumnoActivity.class);
+                intentEdicion.putExtra("alumno", alumno);
+                intentEdicion.putExtra("modoEdicion", true);
+                startActivity(intentEdicion);
+                finish();
+                return true;
+            case R.id.action_alum:
+                Intent intentAlumno = new Intent(GrillaAlumnoActivity.this, GrillaAlumnoActivity.class);
+                intentAlumno.putExtra("alumno", alumno);
+                intentAlumno.putExtra("modoEdicion", false);
+                startActivity(intentAlumno);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadBitmap(int resId, ImageView imageView) {
@@ -82,38 +105,71 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
-        private static final String ARG_SECTION_NUMBER = "section_number";
         private GridView gridView;
         private GrillaAdapter imagenesAdapter;
-        /*private List<Integer> imagenes;
-        private List<String> nombreImagenes;*/
         private int anchoColumna;
-        static private Alumno alumno;
+        String nombreSolapa;
+        Alumno alumno;
+        boolean modoEdicion;
 
 
-        public PlaceholderFragment() {
+        public PlaceholderFragment(){}
+
+        public PlaceholderFragment(int numeroPagina, Alumno alum, boolean modo) {
+            modoEdicion = modo;
+            alumno = alum;
+            nombreSolapa = getPageTitle(numeroPagina).toString();
         }
+
+        private CharSequence getPageTitle(int position) {
+            if (modoEdicion) {
+                switch (position) {
+                    case 0:
+                        return "Pista";
+                    case 1:
+                        return "Establo";
+                    case 2:
+                        return "Necesidades";
+                    case 3:
+                        return "Emociones";
+                    case 4:
+                        return alumno.toString();
+                }
+            }else {
+                String[] solapas = alumno.getPestañas().split(",");
+
+                if (position < solapas.length) {
+                    return solapas[position];
+                } else if (position == solapas.length) {
+                    return alumno.toString();
+                } else {
+                    return null;
+                }
+            }
+            return null;
+        }
+
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber, Alumno alum) {
-            alumno = alum;
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
+        public static PlaceholderFragment newInstance(int numeroPagina, Alumno alum, boolean modo) {
+            PlaceholderFragment fragment = new PlaceholderFragment(numeroPagina, alum, modo);
             return fragment;
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_grilla_alumno, container, false);
             gridView = (GridView) rootView.findViewById(R.id.imagenes);
             this.setGrilla(3, 18);
-            imagenesAdapter = new GrillaAdapter(getActivity(), ImageData.images.get(getArguments().getInt(ARG_SECTION_NUMBER)).ids, anchoColumna, ImageData.images.get(getArguments().getInt(ARG_SECTION_NUMBER)).nombres, alumno);
+
+            List<Integer> listaIdImagenes = new ImageData(alumno.toString()).getImages().get(nombreSolapa.toLowerCase()).ids;
+            List<String> listaNombreImagenes =  new ImageData(alumno.toString()).getImages().get(nombreSolapa.toLowerCase()).nombres;
+
+
+            imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion);
             gridView.setAdapter(imagenesAdapter);
             return rootView;
 
@@ -153,39 +209,47 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1, alumno);
+            return PlaceholderFragment.newInstance(position, alumno, modoEdicion);
         }
 
         @Override
         public int getCount() {
-            return 5;
+            if(modoEdicion) {
+                return 5;
+            }else{
+                String [] solapas = alumno.getPestañas().split(",");
+                return solapas.length + 1;
+            }
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            /*switch (position) {
-                case 0:
-                    return "Pista";
-                case 1:
-                    return "Establo";
-                case 2:
-                    return "Necesidades";
-                case 3:
-                    return "Emociones";
-                case 4:
+            if (modoEdicion) {
+                switch (position) {
+                    case 0:
+                        return "Pista";
+                    case 1:
+                        return "Establo";
+                    case 2:
+                        return "Necesidades";
+                    case 3:
+                        return "Emociones";
+                    case 4:
+                        return alumno.toString();
+                }
+            }else {
+                String[] solapas = alumno.getPestañas().split(","); //los nombres de las solapas están separadas por comas
+
+                if (position < solapas.length) {
+                    // System.out.println("solapas position" + solapas[position]);
+                    return solapas[position];
+                } else if (position == solapas.length) {
                     return alumno.toString();
+                } else {
+                    return null;
+                }
             }
             return null;
-        }*/
-            String[] solapas = alumno.getPestañas().split(","); //los nombres de las solapas están separadas por comas
-
-            if (position < solapas.length) {
-                return solapas[position];
-            } else if (position == solapas.length) {
-                return alumno.toString();
-            } else {
-                return null;
-            }
         }
 
     }
