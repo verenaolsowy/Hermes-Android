@@ -113,15 +113,19 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         boolean modoEdicion;
 
 
-        public PlaceholderFragment(){}
+        public PlaceholderFragment() {
+        }
 
         public PlaceholderFragment(int numeroPagina, Alumno alum, boolean modo) {
             modoEdicion = modo;
             alumno = alum;
+            // System.out.println(alumno);
             nombreSolapa = getPageTitle(numeroPagina).toString();
+            System.out.println(nombreSolapa);
         }
 
         private CharSequence getPageTitle(int position) {
+            System.out.println("POSITION" + position);
             if (modoEdicion) {
                 switch (position) {
                     case 0:
@@ -135,12 +139,12 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
                     case 4:
                         return alumno.toString();
                 }
-            }else {
-                String[] solapas = alumno.getPestañas().split(",");
+            } else {
+                String[] solapas = alumno.getPestañas() != null ? alumno.getPestañas().split(",") : null;
 
-                if (position < solapas.length) {
+                if (solapas != null && position < solapas.length) {
                     return solapas[position];
-                } else if (position == solapas.length) {
+                } else if (solapas == null || position == solapas.length) {
                     return alumno.toString();
                 } else {
                     return null;
@@ -148,6 +152,7 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             }
             return null;
         }
+
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -215,8 +220,8 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             if(modoEdicion) {
                 return 5;
             }else{
-                String [] solapas = alumno.getPestañas().split(",");
-                return solapas.length + 1;
+                String [] solapas = alumno.getPestañas()!=null ?  alumno.getPestañas().split(","): null;
+                return solapas != null ? solapas.length + 1 : 1;
             }
         }
 
@@ -236,11 +241,11 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
                         return alumno.toString();
                 }
             }else {
-                String[] solapas = alumno.getPestañas().split(",");
+                String[] solapas = alumno.getPestañas()!=null ? alumno.getPestañas().split(",") : null;
 
-                if (position < solapas.length) {
+                if (solapas != null && position < solapas.length) {
                     return solapas[position];
-                } else if (position == solapas.length) {
+                } else if (solapas == null || position == solapas.length) {
                     return alumno.toString();
                 } else {
                     return null;

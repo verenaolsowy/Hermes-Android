@@ -56,7 +56,7 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
             nombreAlumno.setText(alumno.getNombre());
             apellidoAlumno.setText(alumno.getApellido());
             pestañas = alumno.getPestañas();
-            String[] solapas = alumno.getPestañas().split(",");
+            String[] solapas = alumno.getPestañas() != null ? alumno.getPestañas().split(",") : new String[]{""};
             for(String solapa: solapas) {
                 switch (solapa) {
                     case "pista":
@@ -121,9 +121,9 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
 
                 public void onClick(DialogInterface dialog, int boton) {
                     Intent intent;
-                    if (alumno == null){
+                    if (alumno == null) {
                         intent = new Intent(NuevoAlumnoActivity.this, ListaAlumnosActivity.class);
-                    }else{
+                    } else {
                         intent = new Intent(NuevoAlumnoActivity.this, GrillaAlumnoActivity.class);
                         intent.putExtra("modoEdicion", false);
                         intent.putExtra("alumno", alumno);
@@ -236,6 +236,12 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
             solapas += "emociones,";
         }
 
-        pestañas = solapas;
+        if (solapas.length() > 1) {
+            solapas = solapas.substring(0, solapas.length() - 1);
+            pestañas = solapas;
+        }else{
+            pestañas = null;
+        }
+
     }
 }
