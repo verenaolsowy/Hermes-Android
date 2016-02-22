@@ -111,21 +111,19 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         String nombreSolapa;
         Alumno alumno;
         boolean modoEdicion;
-
+        private int numeroPagina;
 
         public PlaceholderFragment() {
         }
 
         public PlaceholderFragment(int numeroPagina, Alumno alum, boolean modo) {
+            this.numeroPagina = numeroPagina;
             modoEdicion = modo;
             alumno = alum;
-            // System.out.println(alumno);
             nombreSolapa = getPageTitle(numeroPagina).toString();
-            System.out.println(nombreSolapa);
         }
 
         private CharSequence getPageTitle(int position) {
-            System.out.println("POSITION" + position);
             if (modoEdicion) {
                 switch (position) {
                     case 0:
@@ -167,14 +165,26 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_grilla_alumno, container, false);
             gridView = (GridView) rootView.findViewById(R.id.imagenes);
-            this.setGrilla(3, 18);
+            int cant_columnas=1;
+            switch (alumno.getTamañoPictogramas()) {
+                case "Chico":
+                    cant_columnas=5;
+                    break;
+                case "Mediano":
+                    cant_columnas=4;
+                    break;
+                case "Grande":
+                    cant_columnas=3;
+                    break;
+            }
+            this.setGrilla(cant_columnas, 18);
 
             Database db = new Database(this.getContext());
             List<Integer> listaIdImagenes = new ImageData(alumno,getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
             List<String> listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
 
 
-            imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion);
+            imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion, numeroPagina);
             gridView.setAdapter(imagenesAdapter);
             return rootView;
 

@@ -27,4 +27,8 @@
         <item>Mediano</item>
         <item>Grande</item>
     </string-array>
+    <string-array name="sexo">
+        <item>Masculino</item>
+        <item>Femenino</item>
+    </string-array>
 </resources>

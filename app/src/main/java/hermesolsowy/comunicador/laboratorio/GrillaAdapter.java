@@ -3,6 +3,7 @@ package hermesolsowy.comunicador.laboratorio;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,17 +20,19 @@ public class GrillaAdapter extends BaseAdapter {
     private List<String> listaNombreImagenes = new ArrayList<String>();
     private Alumno alumno;
     private Boolean modoEdiccion;
+    private int numeroPagina;
 
     private int imageWidth;
 
-    public GrillaAdapter(Activity activity, List<Integer> listaIdImagenes,
-                                int imageWidth, List<String> listaNombreImagenes, Alumno alumno, Boolean modoEdiccion) {
+    public GrillaAdapter(Activity activity, List<Integer> listaIdImagenes, int imageWidth, List<String> listaNombreImagenes,
+                         Alumno alumno, Boolean modoEdiccion, int numeroPagina) {
         this._activity = activity;
         this.listaIdImagenes = listaIdImagenes;
         this.listaNombreImagenes = listaNombreImagenes;
         this.imageWidth = imageWidth;
         this.alumno = alumno;
         this.modoEdiccion = modoEdiccion;
+        this.numeroPagina = numeroPagina;
     }
 
     @Override
@@ -62,13 +65,12 @@ public class GrillaAdapter extends BaseAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println(modoEdiccion);
                 if (!modoEdiccion) {
                     int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-                    MediaPlayer mediaPlayer = MediaPlayer.create(_activity, soundId);
-                    mediaPlayer.start();
-
                     String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                    if (nombreContenido != "si" && nombreContenido != "no") {
+                    System.out.println("ENTRO"+nombreContenido);
+                    if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
                         Database db = new Database(_activity);
                         String categoria = db.getCategoria(nombreContenido);
                         Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
@@ -77,11 +79,12 @@ public class GrillaAdapter extends BaseAdapter {
                         new SendNotificationTask().execute(lista, _activity.getApplicationContext());
                     }
                 } else {
-                    imageView.setColorFilter(2);
-                    Database db = new Database(_activity);
-                    int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-                    String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                    db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
+                    if (numeroPagina != 4) {
+                        Database db = new Database(_activity);
+                        int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
+                        String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
+                        db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
+                    }
                 }
             }
         });

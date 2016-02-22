@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +28,25 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
     CheckBox establo;
     CheckBox necesidades;
     CheckBox emociones;
+    Spinner spinnerTamaño;
+    Spinner spinnerSexo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nuevo_alumno);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        spinnerSexo = (Spinner) findViewById(R.id.sexoAlumno);
+        ArrayAdapter<CharSequence> adapterSexo = ArrayAdapter.createFromResource(this, R.array.sexo, android.R.layout.simple_spinner_item);
+        adapterSexo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSexo.setAdapter(adapterSexo);
+
+        spinnerTamaño = (Spinner) findViewById(R.id.tamañoPictograma);
+        ArrayAdapter<CharSequence> adapterTamaño = ArrayAdapter.createFromResource(this, R.array.tamañoPictograma, android.R.layout.simple_spinner_item);
+        adapterTamaño.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTamaño.setAdapter(adapterTamaño);
+
 
         db = new Database(this);
         configuracion = db.getConfiguracion();
@@ -53,6 +68,26 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
         emociones = (CheckBox) findViewById(R.id.emociones);
 
         if (alumno != null) {
+            switch (alumno.getTamañoPictogramas()) {
+                case "Chico":
+                    spinnerTamaño.setSelection(0, true);
+                    break;
+                case "Mediano":
+                    spinnerTamaño.setSelection(1, true);
+                    break;
+                case "Grande":
+                    spinnerTamaño.setSelection(2, true);
+                    break;
+            }
+
+            switch (alumno.getSexo()) {
+                case "Masculino":
+                    spinnerSexo.setSelection(0, true);
+                    break;
+                case "Femenino":
+                    spinnerSexo.setSelection(1, true);
+                    break;
+            }
             nombreAlumno.setText(alumno.getNombre());
             apellidoAlumno.setText(alumno.getApellido());
             pestañas = alumno.getPestañas();
@@ -141,9 +176,10 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
     private boolean modificarAlumno(){
         String nombre = nombreAlumno.getText().toString();
         String apellido = apellidoAlumno.getText().toString();
-        String tamañoPictograma = "";
+        String tamañoPictograma = (String)spinnerTamaño.getSelectedItem();
+        String sexoAlumno = (String)spinnerSexo.getSelectedItem();
         if ((nombre != null && nombre.length() != 0) && (apellido != null && apellido.length() != 0)) {
-            alumno = db.modificarAlumno(alumno.getId(), nombre, apellido, "Femenino", tamañoPictograma, pestañas);
+            alumno = db.modificarAlumno(alumno.getId(), nombre, apellido, sexoAlumno, tamañoPictograma, pestañas);
             Toast.makeText(NuevoAlumnoActivity.this, R.string.alumno_guardar_confirmacion, Toast.LENGTH_SHORT).show();
             return true;
         }else{
@@ -154,12 +190,13 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
     public boolean nuevoAlumno() {
         String nombre = nombreAlumno.getText().toString();
         String apellido = apellidoAlumno.getText().toString();
-        String tamañoPictograma = "";
+        String tamañoPictograma = (String)spinnerTamaño.getSelectedItem();
+        String sexoAlumno = (String)spinnerSexo.getSelectedItem();
 
         if ((nombre != null && nombre.length() != 0) && (apellido != null && apellido.length() != 0)) {
             Database database = new Database(getApplicationContext());
             database.getWritableDatabase();
-            database.nuevoAlumno(nombre, apellido, "Femenino", tamañoPictograma, pestañas);
+            database.nuevoAlumno(nombre, apellido, sexoAlumno, tamañoPictograma, pestañas);
             Toast.makeText(NuevoAlumnoActivity.this, R.string.alumno_crear_confirmacion, Toast.LENGTH_SHORT).show();
             return true;
         }else{
