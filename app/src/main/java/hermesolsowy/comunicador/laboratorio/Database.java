@@ -199,7 +199,7 @@ public class Database extends SQLiteOpenHelper {
 
     public void borrarPictogramaAlumno(int alumno, String pictograma) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete("alumno", "alumno=" + alumno + "AND pictograma=" + pictograma, null);
+        db.delete("pictograma_alumno", "alumno_id=" + alumno + " AND pictograma_id='" + pictograma +"'", null);
         db.close();
     }
 

@@ -2,6 +2,7 @@ package hermesolsowy.comunicador.laboratorio;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,11 +22,12 @@ public class GrillaAdapter extends BaseAdapter {
     private Alumno alumno;
     private Boolean modoEdiccion;
     private int numeroPagina;
+    private List<String> listaPictogramaAlumno;
 
     private int imageWidth;
 
     public GrillaAdapter(Activity activity, List<Integer> listaIdImagenes, int imageWidth, List<String> listaNombreImagenes,
-                         Alumno alumno, Boolean modoEdiccion, int numeroPagina) {
+                         Alumno alumno, Boolean modoEdiccion, int numeroPagina, List<String> listaPictogramaAlumno) {
         this._activity = activity;
         this.listaIdImagenes = listaIdImagenes;
         this.listaNombreImagenes = listaNombreImagenes;
@@ -33,6 +35,7 @@ public class GrillaAdapter extends BaseAdapter {
         this.alumno = alumno;
         this.modoEdiccion = modoEdiccion;
         this.numeroPagina = numeroPagina;
+        this.listaPictogramaAlumno = listaPictogramaAlumno!=null ? listaPictogramaAlumno : new ArrayList<String>();
     }
 
     @Override
@@ -58,9 +61,15 @@ public class GrillaAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setLayoutParams(new GridView.LayoutParams(imageWidth, imageWidth));
+        int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
+        String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
+        if (modoEdiccion && numeroPagina != 4 && listaPictogramaAlumno.contains(nombreContenido)) {
+            imageView.setPadding(8, 8, 8, 8);
+            imageView.setBackgroundColor(Color.BLACK);
+        }
+
         ((GrillaAlumnoActivity) _activity).loadBitmap(this.listaIdImagenes.get(position), imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +78,7 @@ public class GrillaAdapter extends BaseAdapter {
                 if (!modoEdiccion) {
                     int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
                     String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                    System.out.println("ENTRO"+nombreContenido);
+                    System.out.println("ENTRO" + nombreContenido);
                     if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
                         Database db = new Database(_activity);
                         String categoria = db.getCategoria(nombreContenido);
@@ -83,7 +92,16 @@ public class GrillaAdapter extends BaseAdapter {
                         Database db = new Database(_activity);
                         int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
                         String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                        db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
+                        if (listaPictogramaAlumno.contains(nombreContenido)) {
+                            listaPictogramaAlumno.remove(nombreContenido);
+                            db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
+                            imageView.setPadding(0, 0, 0, 0);
+                        } else {
+                            listaPictogramaAlumno.add(nombreContenido);
+                            db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
+                            imageView.setPadding(8, 8, 8, 8);
+                            imageView.setBackgroundColor(Color.BLACK);
+                        }
                     }
                 }
             }

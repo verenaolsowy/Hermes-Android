@@ -180,11 +180,12 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             this.setGrilla(cant_columnas, 18);
 
             Database db = new Database(this.getContext());
+            List<String> listaPictogramaAlumno = db.listaPicogramaAlumno(alumno.getId());
             List<Integer> listaIdImagenes = new ImageData(alumno,getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
             List<String> listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
 
 
-            imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion, numeroPagina);
+            imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion, numeroPagina, listaPictogramaAlumno);
             gridView.setAdapter(imagenesAdapter);
             return rootView;
 
