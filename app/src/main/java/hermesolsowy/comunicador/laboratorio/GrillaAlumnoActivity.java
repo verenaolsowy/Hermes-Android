@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GrillaAlumnoActivity extends AppCompatActivity {
@@ -52,6 +51,10 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         setTitle(alumno.toString());
     }
+
+    /*public void refresh(int pos){
+       mSectionsPagerAdapter.getItem(pos);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,8 +183,8 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             this.setGrilla(cant_columnas, 18);
 
             Database db = new Database(this.getContext());
-            List<String> listaPictogramaAlumno = db.listaPicogramaAlumno(alumno.getId());
-            List<Integer> listaIdImagenes = new ImageData(alumno,getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
+            List<String> listaPictogramaAlumno = db.listaPictogramaAlumno(alumno.getId());
+            List<Integer> listaIdImagenes = new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
             List<String> listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
 
 

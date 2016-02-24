@@ -1,10 +1,8 @@
 package hermesolsowy.comunicador.laboratorio;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,24 +14,24 @@ import java.util.List;
 
 public class GrillaAdapter extends BaseAdapter {
 
-    private Activity _activity;
+    private Activity activity;
     private List<Integer> listaIdImagenes = new ArrayList<Integer>();
     private List<String> listaNombreImagenes = new ArrayList<String>();
     private Alumno alumno;
-    private Boolean modoEdiccion;
+    private Boolean modoEdicion;
     private int numeroPagina;
     private List<String> listaPictogramaAlumno;
 
     private int imageWidth;
 
     public GrillaAdapter(Activity activity, List<Integer> listaIdImagenes, int imageWidth, List<String> listaNombreImagenes,
-                         Alumno alumno, Boolean modoEdiccion, int numeroPagina, List<String> listaPictogramaAlumno) {
-        this._activity = activity;
+                         Alumno alumno, Boolean modoEdicion, int numeroPagina, List<String> listaPictogramaAlumno) {
+        this.activity = activity;
         this.listaIdImagenes = listaIdImagenes;
         this.listaNombreImagenes = listaNombreImagenes;
         this.imageWidth = imageWidth;
         this.alumno = alumno;
-        this.modoEdiccion = modoEdiccion;
+        this.modoEdicion = modoEdicion;
         this.numeroPagina = numeroPagina;
         this.listaPictogramaAlumno = listaPictogramaAlumno!=null ? listaPictogramaAlumno : new ArrayList<String>();
     }
@@ -57,41 +55,41 @@ public class GrillaAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ImageView imageView;
         if (convertView == null) {
-            imageView = new ImageView(_activity);
+            imageView = new ImageView(activity);
         } else {
             imageView = (ImageView) convertView;
         }
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setLayoutParams(new GridView.LayoutParams(imageWidth, imageWidth));
-        int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-        String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-        if (modoEdiccion && numeroPagina != 4 && listaPictogramaAlumno.contains(nombreContenido)) {
+        int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
+        String nombreContenido = activity.getResources().getResourceEntryName(soundId);
+        if (modoEdicion && numeroPagina != 4 && listaPictogramaAlumno.contains(nombreContenido)) {
             imageView.setPadding(8, 8, 8, 8);
             imageView.setBackgroundColor(Color.BLACK);
         }
 
-        ((GrillaAlumnoActivity) _activity).loadBitmap(this.listaIdImagenes.get(position), imageView);
+        ((GrillaAlumnoActivity) activity).loadBitmap(this.listaIdImagenes.get(position), imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(modoEdiccion);
-                if (!modoEdiccion) {
-                    int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-                    String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
-                    System.out.println("ENTRO" + nombreContenido);
+                if (!modoEdicion) {
+                    int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
+                    String nombreContenido = activity.getResources().getResourceEntryName(soundId);
+                    MediaPlayer player = MediaPlayer.create(activity, soundId);
+                    player.start();
                     if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
-                        Database db = new Database(_activity);
+                        Database db = new Database(activity);
                         String categoria = db.getCategoria(nombreContenido);
                         Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
                         List<Notificacion> lista = new ArrayList<Notificacion>();
                         lista.add(notificacion);
-                        new SendNotificationTask().execute(lista, _activity.getApplicationContext());
+                        new SendNotificationTask().execute(notificacion, activity.getApplicationContext());
                     }
                 } else {
                     if (numeroPagina != 4) {
-                        Database db = new Database(_activity);
-                        int soundId = _activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", _activity.getPackageName());
-                        String nombreContenido = _activity.getResources().getResourceEntryName(soundId);
+                        Database db = new Database(activity);
+                        int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
+                        String nombreContenido = activity.getResources().getResourceEntryName(soundId);
                         if (listaPictogramaAlumno.contains(nombreContenido)) {
                             listaPictogramaAlumno.remove(nombreContenido);
                             db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
@@ -104,6 +102,24 @@ public class GrillaAdapter extends BaseAdapter {
                         }
                     }
                 }
+            }
+        });
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                if (modoEdicion && numeroPagina == 4) {
+                    int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
+                    String nombreContenido = activity.getResources().getResourceEntryName(soundId);
+                    if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
+                        Database db = new Database(activity);
+                        listaPictogramaAlumno.remove(nombreContenido);
+                        db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
+                        imageView.setPadding(0, 0, 0, 0);
+                    }
+                    // ((GrillaAlumnoActivity) activity).refresh(4);
+                }
+                return true;
             }
         });
         return imageView;

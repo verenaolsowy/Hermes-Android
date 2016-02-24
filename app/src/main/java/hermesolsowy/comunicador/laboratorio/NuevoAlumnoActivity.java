@@ -38,12 +38,12 @@ public class NuevoAlumnoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         spinnerSexo = (Spinner) findViewById(R.id.sexoAlumno);
-        ArrayAdapter<CharSequence> adapterSexo = ArrayAdapter.createFromResource(this, R.array.sexo, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterSexo = ArrayAdapter.createFromResource(this, R.array.sexo, R.layout.style_spinners);
         adapterSexo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSexo.setAdapter(adapterSexo);
 
         spinnerTamaño = (Spinner) findViewById(R.id.tamañoPictograma);
-        ArrayAdapter<CharSequence> adapterTamaño = ArrayAdapter.createFromResource(this, R.array.tamañoPictograma, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterTamaño = ArrayAdapter.createFromResource(this, R.array.tamañoPictograma, R.layout.style_spinners);
         adapterTamaño.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTamaño.setAdapter(adapterTamaño);
 

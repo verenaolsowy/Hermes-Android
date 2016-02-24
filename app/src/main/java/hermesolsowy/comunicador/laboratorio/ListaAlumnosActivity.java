@@ -22,7 +22,7 @@ public class ListaAlumnosActivity extends AppCompatActivity {
         Database db = new Database(this);
         ArrayList<Alumno> lista = db.listaAlumnos();
         listaAlumnos = (ListView) findViewById(R.id.listaAlumnos);
-        ListAdapter adapter = new ArrayAdapter<Alumno>(this, android.R.layout.simple_list_item_1, lista);
+        ListAdapter adapter = new ArrayAdapter<Alumno>(this, R.layout.style_lista_alumno, lista);
         listaAlumnos.setAdapter(adapter);
         listaAlumnos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

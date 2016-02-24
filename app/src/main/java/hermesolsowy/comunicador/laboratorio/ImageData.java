@@ -1,7 +1,6 @@
 package hermesolsowy.comunicador.laboratorio;
 
 import android.app.Activity;
-import android.content.res.Resources;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -128,13 +127,13 @@ public class ImageData {
         alumnoAudios.add("si");
         alum.add(R.drawable.no);
         alumnoAudios.add("no");
-        ArrayList<String> pictogramas = db.listaPicogramaAlumno(alumno.getId());
+        ArrayList<String> pictogramas = db.listaPictogramaAlumno(alumno.getId());
         for (String pictograma:pictogramas) {
             alum.add(activity.getResources().getIdentifier(pictograma, "drawable", activity.getPackageName()));
             alumnoAudios.add(pictograma);
         }
         Data cinco = new Data(alum, alumnoAudios);
-        images.put(alumno.toString(), cinco);
+        images.put(alumno.toString().toLowerCase(), cinco);
         return images;
     }
 }
