@@ -1,5 +1,6 @@
 package hermesolsowy.comunicador.laboratorio;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -17,25 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
-
+import java.util.Hashtable;
 import java.util.List;
 
 public class GrillaAlumnoActivity extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     Alumno alumno;
     boolean modoEdicion;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -52,9 +42,16 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         setTitle(alumno.toString());
     }
 
-    /*public void refresh(int pos){
-       mSectionsPagerAdapter.getItem(pos);
-    }*/
+    public void refresh(int pos){
+        Fragment frag = mSectionsPagerAdapter.getFragment(pos);
+        if(frag != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .detach(frag)
+                    .attach(frag)
+                    .commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,7 +59,6 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_grilla_alumno_edicion, menu);
         }else{
             getMenuInflater().inflate(R.menu.menu_grilla_alumno, menu);
-
         }
         return true;
     }
@@ -126,6 +122,11 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             nombreSolapa = getPageTitle(numeroPagina).toString();
         }
 
+        public static PlaceholderFragment newInstance(int numeroPagina, Alumno alum, boolean modo) {
+            PlaceholderFragment fragment = new PlaceholderFragment(numeroPagina, alum, modo);
+            return fragment;
+        }
+
         private CharSequence getPageTitle(int position) {
             if (modoEdicion) {
                 switch (position) {
@@ -154,16 +155,6 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             return null;
         }
 
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int numeroPagina, Alumno alum, boolean modo) {
-            PlaceholderFragment fragment = new PlaceholderFragment(numeroPagina, alum, modo);
-            return fragment;
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_grilla_alumno, container, false);
@@ -183,9 +174,9 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
             this.setGrilla(cant_columnas, 18);
 
             Database db = new Database(this.getContext());
-            List<String> listaPictogramaAlumno = db.listaPictogramaAlumno(alumno.getId());
-            List<Integer> listaIdImagenes = new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
-            List<String> listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
+            List<String>listaPictogramaAlumno = db.listaPictogramaAlumno(alumno.getId());
+            List<Integer>listaIdImagenes = new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).ids;
+            List<String>listaNombreImagenes =  new ImageData(alumno, getActivity()).getImages(db).get(nombreSolapa.toLowerCase()).nombres;
 
 
             imagenesAdapter = new GrillaAdapter(getActivity(), listaIdImagenes, anchoColumna, listaNombreImagenes, alumno, modoEdicion, numeroPagina, listaPictogramaAlumno);
@@ -220,13 +211,17 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
+        private Hashtable<Integer, Fragment> fragments = new Hashtable<Integer, Fragment>();
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance(position, alumno, modoEdicion);
+            Fragment frag = PlaceholderFragment.newInstance(position, alumno, modoEdicion);
+            this.fragments.put(position, frag);
+            return frag;
         }
 
         @Override
@@ -237,6 +232,10 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
                 String [] solapas = alumno.getPestañas()!=null ?  alumno.getPestañas().split(","): null;
                 return solapas != null ? solapas.length + 1 : 1;
             }
+        }
+
+        public Fragment getFragment(int pos){
+            return this.fragments.get(pos);
         }
 
         @Override

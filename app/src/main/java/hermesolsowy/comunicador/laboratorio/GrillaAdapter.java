@@ -81,8 +81,6 @@ public class GrillaAdapter extends BaseAdapter {
                         Database db = new Database(activity);
                         String categoria = db.getCategoria(nombreContenido);
                         Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", nombreContenido);
-                        List<Notificacion> lista = new ArrayList<Notificacion>();
-                        lista.add(notificacion);
                         new SendNotificationTask().execute(notificacion, activity.getApplicationContext());
                     }
                 } else {
@@ -94,11 +92,13 @@ public class GrillaAdapter extends BaseAdapter {
                             listaPictogramaAlumno.remove(nombreContenido);
                             db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
                             imageView.setPadding(0, 0, 0, 0);
+                            ((GrillaAlumnoActivity) activity).refresh(4);
                         } else {
                             listaPictogramaAlumno.add(nombreContenido);
                             db.cargarPictogramaAlumno(alumno.getId(), nombreContenido);
                             imageView.setPadding(8, 8, 8, 8);
                             imageView.setBackgroundColor(Color.BLACK);
+                            ((GrillaAlumnoActivity) activity).refresh(4);
                         }
                     }
                 }
@@ -114,10 +114,12 @@ public class GrillaAdapter extends BaseAdapter {
                     if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
                         Database db = new Database(activity);
                         listaPictogramaAlumno.remove(nombreContenido);
+                        listaIdImagenes.remove(position);
                         db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
                         imageView.setPadding(0, 0, 0, 0);
+                        ((GrillaAlumnoActivity) activity).refresh(3);
+                        notifyDataSetChanged();
                     }
-                    // ((GrillaAlumnoActivity) activity).refresh(4);
                 }
                 return true;
             }
