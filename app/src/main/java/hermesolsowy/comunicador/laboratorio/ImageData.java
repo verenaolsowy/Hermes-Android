@@ -64,9 +64,9 @@ public class ImageData {
         establoAudios.add("montura");
         establo.add(R.drawable.matra);
         establoAudios.add("matra");
-        establo.add(R.drawable.raquetadura);
+        establo.add(R.drawable.rasquetadura);
         establoAudios.add("rasquetadura");
-        establo.add(R.drawable.raquetablanda);
+        establo.add(R.drawable.rasquetablanda);
         establoAudios.add("rasquetablanda");
         establo.add(R.drawable.pasto);
         establoAudios.add("pasto");
@@ -95,9 +95,9 @@ public class ImageData {
         ArrayList<Integer> emociones = new ArrayList<>();
         ArrayList<String> emocionesAudios = new ArrayList<>();
         emociones.add(R.drawable.dolorido);
-        emocionesAudios.add("meduelem");
+        emocionesAudios.add("dolorido");
         emociones.add(R.drawable.dolorida);
-        emocionesAudios.add("meduelef");
+        emocionesAudios.add("dolorida");
         emociones.add(R.drawable.cansado);
         emocionesAudios.add("cansado");
         emociones.add(R.drawable.cansada);
@@ -136,4 +136,92 @@ public class ImageData {
         images.put(alumno.toString().toLowerCase(), cinco);
         return images;
     }
+
+    public static String getNameImages(String id) {
+        switch (id){
+            case "casco":
+                return "Casco";
+            case "chapas":
+                return "Chapas";
+            case "letras":
+                return "Letras";
+            case "cubos":
+                return "Cubos";
+            case "maracas":
+                return "Maracas";
+            case "palos":
+                return "Palos";
+            case "pato":
+                return "Pato";
+            case "pelota":
+                return "Pelota";
+            case "riendas":
+                return "Riendas";
+            case "burbujas":
+                return "Burbujas";
+            case "broches":
+                return "Broches";
+            case "aro":
+                return "Aro";
+            case "tarima":
+                return "Tarima";
+            case "cepillo":
+                return "Cepillo";
+            case "limpieza":
+                return "Limpieza";
+            case "escarbavasos":
+                return "Escarba Vasos";
+            case "montura":
+                return "Montura";
+            case "matra":
+                return "Matra";
+            case "rasquetadura":
+                return "Rasqueta Dura";
+            case "rasquetablanda":
+                return "Rasqueta Blanda";
+            case "pasto":
+                return "Pasto";
+            case "zanahoria":
+                return "Zanahoria";
+            case "caballo1":
+                return "Caballo";
+            case "caballo2":
+                return "Caballo";
+            case "caballo3":
+                return "Caballo";
+            case "bano":
+                return "Baño";
+            case "sedf":
+                return "Sed";
+            case "sedm":
+                return "Sed";
+            case "dolorido":
+                return "Dolorido";
+            case "dolorida":
+                return "Dolorida";
+            case "cansado":
+                return "Cansado";
+            case "cansada":
+                return "Cansada";
+            case "sorprendido":
+                return "Sorprendido";
+            case "sorprendida":
+                return "Sorprendida";
+            case "asustado":
+                return "Asustado";
+            case "asustada":
+                return "Asustada";
+            case "contento":
+                return "Contento";
+            case "contenta":
+                return "Contenta";
+            case "enojado":
+                return "Enojado";
+            case "enojada":
+                return "Enojada";
+            default:
+                return "";
+        }
+    }
+
 }

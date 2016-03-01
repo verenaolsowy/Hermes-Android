@@ -39,37 +39,39 @@ public class SendNotificationTask extends AsyncTask {
         NetworkInfo infoNet = cm.getActiveNetworkInfo();
 
         if (infoNet != null && infoNet.isConnectedOrConnecting()) {
-
             OutputStream os = null;
             HttpURLConnection conn = null;
             try {
                 URL urlObject = new URL(url);
                 conn = (HttpURLConnection) urlObject.openConnection();
-                conn.setReadTimeout(100000);
+                conn.setConnectTimeout(15000);
                 conn.setDoOutput(true);
                 os = conn.getOutputStream();
+                System.out.println(">>>"+os);
             } catch (Exception e1) {
                 System.out.println("Error en la URL");
                 e1.printStackTrace();
             }
 
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
-
+            BufferedWriter writer = os != null?new BufferedWriter(new OutputStreamWriter(os)):null;
 
             try {
-                writer.write(notificacionJson);
-                writer.close();
-                os.close();
-                int code = conn.getResponseCode();
-                System.out.println("code:" + code);
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    System.out.println(inputLine);
+                if(writer != null) {
+                    writer.write(notificacionJson);
+                    writer.close();
+                    os.close();
+                    int code = conn.getResponseCode();
+                    System.out.println("code:" + code);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println(inputLine);
+                    }
+                    in.close();
+                    System.out.println(conn.getResponseMessage());
+                }else{
+                    System.out.println("Error de al enviar datos ");
                 }
-                in.close();
-                System.out.println(conn.getResponseMessage());
-
             } catch (IOException e) {
                 System.out.println("Error de al enviar datos ");
                 e.printStackTrace();
