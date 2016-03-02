@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +53,7 @@ public class GrillaAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ImageView imageView;
-        //if (convertView == null) {
-            imageView = new ImageView(activity);
-        /*} else {
-            imageView = (ImageView) convertView;
-        }*/
+        imageView = new ImageView(activity);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setLayoutParams(new GridView.LayoutParams(imageWidth, imageWidth));
         int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
@@ -77,12 +72,10 @@ public class GrillaAdapter extends BaseAdapter {
                     String nombreContenido = activity.getResources().getResourceEntryName(soundId);
                     MediaPlayer player = MediaPlayer.create(activity, soundId);
                     player.start();
-                    if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
-                        Database db = new Database(activity);
-                        String categoria = db.getCategoria(nombreContenido);
-                        Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", ImageData.getNameImages(nombreContenido));
-                        new SendNotificationTask().execute(notificacion, activity.getApplicationContext());
-                    }
+                    Database db = new Database(activity);
+                    String categoria = db.getCategoria(nombreContenido);
+                    Notificacion notificacion = new Notificacion(alumno.getApellido(), alumno.getNombre(), categoria, "Cedica", ImageData.getNameImages(nombreContenido));
+                    new SendNotificationTask().execute(notificacion, activity.getApplicationContext());
                 } else {
                     if (numeroPagina != 4) {
                         Database db = new Database(activity);
@@ -111,15 +104,13 @@ public class GrillaAdapter extends BaseAdapter {
                 if (modoEdicion && numeroPagina == 4) {
                     int soundId = activity.getResources().getIdentifier(listaNombreImagenes.get(position), "raw", activity.getPackageName());
                     String nombreContenido = activity.getResources().getResourceEntryName(soundId);
-                    if (!nombreContenido.equals("si") && !nombreContenido.equals("no")) {
-                        Database db = new Database(activity);
-                        listaPictogramaAlumno.remove(nombreContenido);
-                        listaIdImagenes.remove(position);
-                        db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
-                        imageView.setPadding(0, 0, 0, 0);
-                        ((GrillaAlumnoActivity) activity).refresh(3);
-                        notifyDataSetChanged();
-                    }
+                    Database db = new Database(activity);
+                    listaPictogramaAlumno.remove(nombreContenido);
+                    listaIdImagenes.remove(position);
+                    db.borrarPictogramaAlumno(alumno.getId(), nombreContenido);
+                    imageView.setPadding(0, 0, 0, 0);
+                    ((GrillaAlumnoActivity) activity).refresh(3);
+                    notifyDataSetChanged();
                 }
                 return true;
             }

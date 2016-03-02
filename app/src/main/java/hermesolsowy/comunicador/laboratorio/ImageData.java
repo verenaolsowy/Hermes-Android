@@ -123,10 +123,6 @@ public class ImageData {
 
         ArrayList<Integer> alum = new ArrayList<>();
         ArrayList<String>alumnoAudios = new ArrayList<>();
-        alum.add(R.drawable.si);
-        alumnoAudios.add("si");
-        alum.add(R.drawable.no);
-        alumnoAudios.add("no");
         ArrayList<String> pictogramas = db.listaPictogramaAlumno(alumno.getId());
         for (String pictograma:pictogramas) {
             alum.add(activity.getResources().getIdentifier(pictograma, "drawable", activity.getPackageName()));

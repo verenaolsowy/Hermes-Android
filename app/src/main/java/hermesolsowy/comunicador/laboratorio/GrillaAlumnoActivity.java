@@ -2,6 +2,7 @@ package hermesolsowy.comunicador.laboratorio;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,18 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setTitle(alumno.toString());
+    }
+
+    public void pictograma_si(View view){
+        int soundId = this.getResources().getIdentifier("si", "raw", this.getPackageName());
+        MediaPlayer player = MediaPlayer.create(this, soundId);
+        player.start();
+    }
+
+    public void pictograma_no(View view){
+        int soundId = this.getResources().getIdentifier("no", "raw", this.getPackageName());
+        MediaPlayer player = MediaPlayer.create(this, soundId);
+        player.start();
     }
 
     public void refresh(int pos){
@@ -157,18 +170,24 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_grilla_alumno, container, false);
-            gridView = (GridView) rootView.findViewById(R.id.imagenes);
+            View rootView;
+            if(modoEdicion || !nombreSolapa.toLowerCase().equals(alumno.toString().toLowerCase())) {
+                rootView = inflater.inflate(R.layout.fragment_grilla_alumno, container, false);
+                gridView = (GridView) rootView.findViewById(R.id.imagenes);
+            }else{
+                rootView = inflater.inflate(R.layout.fragment_grilla_alumno_sino, container, false);
+                gridView = (GridView) rootView.findViewById(R.id.imagenes_alumno);
+            }
             int cant_columnas=1;
             switch (alumno.getTamañoPictogramas()) {
                 case "Chico":
-                    cant_columnas=5;
+                    cant_columnas=(modoEdicion || !nombreSolapa.toLowerCase().equals(alumno.toString().toLowerCase()))?5:4;
                     break;
                 case "Mediano":
-                    cant_columnas=4;
+                    cant_columnas=(modoEdicion || !nombreSolapa.toLowerCase().equals(alumno.toString().toLowerCase()))?4:3;
                     break;
                 case "Grande":
-                    cant_columnas=3;
+                    cant_columnas=(modoEdicion || !nombreSolapa.toLowerCase().equals(alumno.toString().toLowerCase()))?3:2;
                     break;
             }
             this.setGrilla(cant_columnas, 18);
@@ -186,7 +205,12 @@ public class GrillaAlumnoActivity extends AppCompatActivity {
         }
 
         private void setGrilla(int cantidadColumnas, int paddingGrilla) {
-            anchoColumna = (int) ((this.getScreenWidth() - ((cantidadColumnas + 1) * paddingGrilla)) / cantidadColumnas);
+            if(modoEdicion || !nombreSolapa.toLowerCase().equals(alumno.toString().toLowerCase())) {
+                anchoColumna = (int) ((this.getScreenWidth() - ((cantidadColumnas + 1) * paddingGrilla)) / cantidadColumnas);
+            }else {
+                int sino = (this.getScreenWidth() * 20) /100;
+                anchoColumna = (int) (((this.getScreenWidth() - sino) - ((cantidadColumnas + 1) * paddingGrilla)) / cantidadColumnas);
+            }
             gridView.setNumColumns(cantidadColumnas);
             gridView.setColumnWidth(anchoColumna);
             gridView.setStretchMode(GridView.NO_STRETCH);
